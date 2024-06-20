@@ -32,11 +32,13 @@
 
       form.addEventListener('submit', function(e) {
         e.preventDefault();
-        const nickname = document.getElementById('nickname').value;
-        if (nickname) {
-          socket.emit('set nickname', nickname);
-        }
+        const nickname = document.getElementById('nickname').value || 'Anonymous';
         if (input.value) {
+          const item = document.createElement('li');
+          item.textContent = `${nickname}: ${input.value}`;
+          messages.appendChild(item);
+          window.scrollTo(0, document.body.scrollHeight);
+
           socket.emit('chat message', input.value);
           input.value = '';
         }

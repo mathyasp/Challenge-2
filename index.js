@@ -15,17 +15,17 @@ app.get('/', (req, res) => {
 io.on('connection', (socket) => {
   socket.on('set nickname', (nickname) => {
     nicknames[socket.id] = nickname;
-    io.emit('chat message', `${nickname} has connected`);
+    socket.broadcast.emit('chat message', `${nickname} has connected`);
   });
 
   socket.on('chat message', (msg) => {
     const nickname = nicknames[socket.id] || 'Anonymous';
-    io.emit('chat message', `${nickname}: ${msg}`);
+    socket.broadcast.emit('chat message', `${nickname}: ${msg}`);
   });
 
   socket.on('disconnect', () => {
     const nickname = nicknames[socket.id] || 'Anonymous';
-    io.emit('chat message', `${nickname} has disconnected`);
+    socket.broadcast.emit('chat message', `${nickname} has disconnected`);
     delete nicknames[socket.id];
   });
 });
