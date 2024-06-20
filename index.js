@@ -10,8 +10,16 @@ app.get('/', (req, res) => {
 });
 
 io.on('connection', (socket) => {
+  // Broadcast when a user connects
+  socket.broadcast.emit('chat message', 'A user has connected');
+
   socket.on('chat message', (msg) => {
     io.emit('chat message', msg);
+  });
+
+  // Broadcast when a user disconnects
+  socket.on('disconnect', () => {
+    io.emit('chat message', 'A user has disconnected');
   });
 });
 
