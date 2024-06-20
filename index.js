@@ -5,21 +5,28 @@ const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server);
 
+// Nicknames map
+const nicknames = {};
+
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html');
 });
 
 io.on('connection', (socket) => {
-  // Broadcast when a user connects
-  socket.broadcast.emit('chat message', 'A user has connected');
-
-  socket.on('chat message', (msg) => {
-    io.emit('chat message', msg);
+  socket.on('set nickname', (nickname) => {
+    nicknames[socket.id] = nickname;
+    io.emit('chat message', `${nickname} has connected`);
   });
 
-  // Broadcast when a user disconnects
+  socket.on('chat message', (msg) => {
+    const nickname = nicknames[socket.id] || 'Anonymous';
+    io.emit('chat message', `${nickname}: ${msg}`);
+  });
+
   socket.on('disconnect', () => {
-    io.emit('chat message', 'A user has disconnected');
+    const nickname = nicknames[socket.id] || 'Anonymous';
+    io.emit('chat message', `${nickname} has disconnected`);
+    delete nicknames[socket.id];
   });
 });
 

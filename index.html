@@ -18,6 +18,7 @@
   <body>
     <ul id="messages"></ul>
     <form id="form" action="">
+      <input id="nickname" placeholder="Nickname" autocomplete="off" /><br/>
       <input id="input" autocomplete="off" /><button>Send</button>
     </form>
     
@@ -31,6 +32,10 @@
 
       form.addEventListener('submit', function(e) {
         e.preventDefault();
+        const nickname = document.getElementById('nickname').value;
+        if (nickname) {
+          socket.emit('set nickname', nickname);
+        }
         if (input.value) {
           socket.emit('chat message', input.value);
           input.value = '';
